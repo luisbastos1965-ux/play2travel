@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+// ✨ IMPORTAÇÃO DOS JOGOS DOS PACKS ✨
+import 'packs/pack_heritage_hunt.dart'; 
+import 'packs/pack_urban_hero.dart'; 
+import 'packs/pack_duo_bond.dart'; 
+import 'packs/pack_story_senses.dart'; 
+
 class GameplayScreen extends StatefulWidget {
   final String nomePack;
 
@@ -14,95 +20,114 @@ class GameplayScreen extends StatefulWidget {
 class _GameplayScreenState extends State<GameplayScreen> {
   int _jogoSelecionado = 0;
   List<Map<String, dynamic>> _jogosAtuais = [];
+  
+  bool _modoEscolhido = false; 
+  bool _todosAoMesmoTempo = true;
 
   final LatLng _localizacaoJogador = const LatLng(41.1450, -8.6140);
-  final LatLng _localizacaoObjetivo = const LatLng(41.1458, -8.6139); // Clérigos
+  final LatLng _localizacaoObjetivo = const LatLng(41.1458, -8.6139); 
 
   // ==========================================
   // O GRANDE DICIONÁRIO DE PACKS E JOGOS
   // ==========================================
   final Map<String, List<Map<String, dynamic>>> _baseDeDadosPacks = {
-    // PACKS SOLO
     'Pack Heritage Hunt': [
-      {'nome': 'Radar de Curiosidades', 'tipo': 'mapa', 'missao': 'Encontra a base da torre e descobre em que ano foi terminada.', 'progresso': 0.3, 'feitos': 1, 'total': 3},
-      {'nome': 'Bingo Património', 'tipo': 'mapa', 'missao': 'Regista a tua localização nos 5 pontos históricos marcados no mapa.', 'progresso': 0.6, 'feitos': 3, 'total': 5},
-      {'nome': 'Câmara de Época', 'tipo': 'camara', 'missao': 'Alinha a fotografia de 1920 com a vista atual do monumento.', 'progresso': 0.0, 'feitos': 0, 'total': 1},
+      {'nome': 'Radar de Curiosidade', 'tipo': 'mapa', 'missao': 'Encontra datas gravadas, brasões ou azulejos específicos.', 'progresso': 0.0, 'feitos': 0, 'total': 3},
+      {'nome': 'Bingo do Património', 'tipo': 'mapa', 'missao': 'Encontra os elementos da grelha (igreja, ponte, estátua...).', 'progresso': 0.0, 'feitos': 0, 'total': 5},
+      {'nome': 'Câmara de Época', 'tipo': 'camara', 'missao': 'Cria uma foto inspirada em épocas históricas da cidade.', 'progresso': 0.0, 'feitos': 0, 'total': 12},
     ],
     'Pack Urban Hero': [
-      {'nome': 'Diário Explorador', 'tipo': 'narrativa', 'missao': 'Lê a página rasgada do diário antigo e decide que caminho tomar.', 'progresso': 0.5, 'feitos': 1, 'total': 2},
-      {'nome': 'Narrativa Episódica', 'tipo': 'narrativa', 'missao': 'Fala com o "Mercador" virtual e negoceia a próxima pista.', 'progresso': 0.0, 'feitos': 0, 'total': 3},
-      {'nome': 'Enigma do Mestre', 'tipo': 'narrativa', 'missao': 'Decifra a inscrição na parede para abrires o cofre digital.', 'progresso': 0.0, 'feitos': 0, 'total': 1},
+      {'nome': 'Diário do Explorador', 'tipo': 'narrativa', 'missao': 'Regista algo inesperado e descreve este local.', 'progresso': 0.0, 'feitos': 0, 'total': 1},
+      {'nome': 'Narrativa Episódica', 'tipo': 'narrativa', 'missao': 'Toma uma decisão para avançar na história deste local.', 'progresso': 0.0, 'feitos': 0, 'total': 3},
+      {'nome': 'Enigma do Mestre', 'tipo': 'narrativa', 'missao': 'Resolve o enigma usando as pistas espalhadas.', 'progresso': 0.0, 'feitos': 0, 'total': 1},
     ],
-    // PACKS DUO
     'Pack Duo Bond': [
-      {'nome': 'Puzzle de Par', 'tipo': 'narrativa', 'missao': 'Tu tens a Pergunta, o teu parceiro tem a Resposta. Juntem as peças!', 'progresso': 0.0, 'feitos': 0, 'total': 4},
-      {'nome': 'Quiz Afinidade', 'tipo': 'quiz', 'missao': 'Quem é mais provável de se perder nas ruas do Porto?', 'progresso': 0.2, 'feitos': 1, 'total': 5},
-      {'nome': 'Bússola Humana', 'tipo': 'mapa', 'missao': 'Usa o mapa para guiares o teu parceiro "cego" até ao destino.', 'progresso': 0.0, 'feitos': 0, 'total': 1},
+      {'nome': 'Puzzle de Par', 'tipo': 'narrativa', 'missao': 'Comunica com o teu parceiro para juntar as metades das pistas.', 'progresso': 0.0, 'feitos': 0, 'total': 4},
+      {'nome': 'Quiz de Afinidade', 'tipo': 'quiz', 'missao': 'Responde sobre as tuas preferências. O que escolheu o parceiro?', 'progresso': 0.0, 'feitos': 0, 'total': 5},
+      {'nome': 'Bússola Humana', 'tipo': 'mapa', 'missao': 'Guia o teu parceiro até ao destino usando estas instruções.', 'progresso': 0.0, 'feitos': 0, 'total': 6},
     ],
     'Pack Story & Senses': [
-      {'nome': 'Destino Partilhado', 'tipo': 'narrativa', 'missao': 'Tomem uma decisão em conjunto que mudará o final da história.', 'progresso': 0.5, 'feitos': 1, 'total': 2},
-      {'nome': 'Romeu e Julieta', 'tipo': 'mapa', 'missao': 'Começam em lados opostos da cidade. Encontrem-se no ponto central!', 'progresso': 0.8, 'feitos': 4, 'total': 5},
-      {'nome': 'Prisma da Saudade', 'tipo': 'camara', 'missao': 'Capta a melancolia deste local usando o filtro "Saudade" (Azul).', 'progresso': 0.0, 'feitos': 0, 'total': 1},
+      {'nome': 'Destino Partilhado', 'tipo': 'narrativa', 'missao': 'Adiciona um elemento à vossa narrativa conjunta neste local.', 'progresso': 0.0, 'feitos': 0, 'total': 7},
+      {'nome': 'Missão Romeu e Julieta', 'tipo': 'mapa', 'missao': 'Cumpre a tua missão separadamente até ao ponto de reencontro.', 'progresso': 0.0, 'feitos': 0, 'total': 6},
+      {'nome': 'Prisma da Saudade', 'tipo': 'quiz', 'missao': 'Que emoção, som ou cheiro associas a este lugar?', 'progresso': 0.0, 'feitos': 0, 'total': 5}, // Atualizado o total para 5 locais
     ],
-    // PACKS TEAM
     'Pack Map Clash': [
-      {'nome': 'Domínio Bairro', 'tipo': 'mapa', 'missao': 'A vossa equipa tem de conquistar mais zonas que a equipa adversária!', 'progresso': 0.4, 'feitos': 2, 'total': 5},
-      {'nome': 'Corrida Pistas Elite', 'tipo': 'narrativa', 'missao': 'Identifica o "Impostor" na tua equipa antes que acabe o tempo.', 'progresso': 0.0, 'feitos': 0, 'total': 1},
-      {'nome': 'Logística Grupo', 'tipo': 'quiz', 'missao': 'Distribui os recursos limitados pelos elementos da tua equipa.', 'progresso': 0.0, 'feitos': 0, 'total': 3},
+      {'nome': 'Domínio de Bairro', 'tipo': 'mapa', 'missao': 'Completa a tarefa rápida para conquistar esta zona!', 'progresso': 0.0, 'feitos': 0, 'total': 3},
+      {'nome': 'Corrida de Elite', 'tipo': 'mapa', 'missao': 'Segue a pista até ao próximo local estratégico.', 'progresso': 0.0, 'feitos': 0, 'total': 5},
+      {'nome': 'Logística de Grupo', 'tipo': 'narrativa', 'missao': 'Coordena a tua tarefa específica com o resto da equipa.', 'progresso': 0.0, 'feitos': 0, 'total': 1},
     ],
     'Pack Fest Vibes': [
-      {'nome': 'S. João Challenge', 'tipo': 'quiz', 'missao': 'Qual a tradição mais antiga do São João? Responde rápido!', 'progresso': 0.0, 'feitos': 0, 'total': 10},
-      {'nome': 'Aftermovie Coletivo', 'tipo': 'camara', 'missao': 'Grava 5 segundos de vídeo em Slow Motion com a tua equipa a saltar.', 'progresso': 0.2, 'feitos': 1, 'total': 5},
-      {'nome': 'Tokens de Evento', 'tipo': 'mapa', 'missao': 'Caça aos Tokens dourados espalhados pelo recinto do festival.', 'progresso': 0.7, 'feitos': 7, 'total': 10},
-    ],
-    // ESPECIAIS
-    "60' of Tourism": [
-      {'nome': 'Contra-Relógio', 'tipo': 'mapa', 'missao': 'Tens 60 minutos para visitar os 5 marcos principais da cidade. Corre!', 'progresso': 0.2, 'feitos': 1, 'total': 5},
-    ],
-    'Quiet Edition (Porto)': [
-      {'nome': 'Exploração ASMR', 'tipo': 'camara', 'missao': 'Grava o som ambiente silencioso nos Jardins do Palácio de Cristal.', 'progresso': 0.0, 'feitos': 0, 'total': 3},
+      {'nome': 'S. João Challenge', 'tipo': 'quiz', 'missao': 'Dá uma martelada simbólica e encontra a sardinha!', 'progresso': 0.0, 'feitos': 0, 'total': 3},
+      {'nome': 'Aftermovie Coletivo', 'tipo': 'camara', 'missao': 'Grava um pequeno clip da equipa neste momento da exploração.', 'progresso': 0.0, 'feitos': 0, 'total': 1},
+      {'nome': 'Tokens de Evento', 'tipo': 'mapa', 'missao': 'Procura os tokens digitais espalhados pela cidade.', 'progresso': 0.0, 'feitos': 0, 'total': 5},
     ],
   };
 
   @override
   void initState() {
     super.initState();
-    // Ao abrir a página, carregamos os jogos do pack que o turista escolheu!
-    // Se por acaso houver um erro e o pack não existir, carrega um de reserva.
     _jogosAtuais = _baseDeDadosPacks[widget.nomePack] ?? _baseDeDadosPacks['Pack Heritage Hunt']!;
   }
 
+  // ==========================================
+  // O ECRÃ DE SELEÇÃO INICIAL
+  // ==========================================
+  Widget _buildEcraSelecaoModo() {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0, iconTheme: const IconThemeData(color: Colors.deepOrange)),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.explore, color: Colors.deepOrange, size: 60), const SizedBox(height: 20),
+            const Text("Como queres explorar?", style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, height: 1.2)), const SizedBox(height: 10),
+            const Text("Escolhe a tua dinâmica de jogo para este pack.", style: TextStyle(color: Colors.white54, fontSize: 16)), const SizedBox(height: 50),
+
+            GestureDetector(
+              onTap: () => setState(() { _todosAoMesmoTempo = false; _modoEscolhido = true; }),
+              child: Container(
+                padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white24)),
+                child: const Row(children: [Icon(Icons.looks_one, color: Colors.blueAccent, size: 40), SizedBox(width: 20), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text("Modo Focado", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)), SizedBox(height: 5), Text("Joga um desafio de cada vez. Só avanças quando concluíres o atual.", style: TextStyle(color: Colors.white54, fontSize: 13))]))]),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            GestureDetector(
+              onTap: () => setState(() { _todosAoMesmoTempo = true; _modoEscolhido = true; }),
+              child: Container(
+                padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white24)),
+                child: const Row(children: [Icon(Icons.dashboard_customize, color: Colors.deepOrange, size: 40), SizedBox(width: 20), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text("Modo Livre", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)), SizedBox(height: 5), Text("Alterna livremente entre os jogos do pack através do menu superior.", style: TextStyle(color: Colors.white54, fontSize: 13))]))]),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==========================================
+  // O ECRÃ DE JOGO PRINCIPAL
+  // ==========================================
   @override
   Widget build(BuildContext context) {
+    if (!_modoEscolhido) return _buildEcraSelecaoModo();
+
     final jogoAtual = _jogosAtuais[_jogoSelecionado];
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.deepOrange),
-        title: Text(
-          widget.nomePack.toUpperCase(),
-          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
-        ),
+        backgroundColor: const Color(0xFF121212), elevation: 0, iconTheme: const IconThemeData(color: Colors.deepOrange),
+        title: Text(_todosAoMesmoTempo ? widget.nomePack.toUpperCase() : "${widget.nomePack.toUpperCase()} (${_jogoSelecionado + 1}/${_jogosAtuais.length})", style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1)),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          // ==========================================
-          // O "CÉREBRO": TROCA O FUNDO MEDIANTE O TIPO
-          // ==========================================
-          Positioned.fill(
-            child: _construirModuloInterface(jogoAtual),
-          ),
-
-          // ==========================================
-          // CARROSSEL DE SELEÇÃO (Fica sempre no topo)
-          // ==========================================
-          Positioned(
-            top: 15, left: 0, right: 0,
-            child: SizedBox(
-              height: 90,
+          if (_todosAoMesmoTempo)
+            Container(
+              height: 100, padding: const EdgeInsets.only(top: 15, bottom: 5), color: const Color(0xFF121212),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 15),
                 itemCount: _jogosAtuais.length,
@@ -113,25 +138,13 @@ class _GameplayScreenState extends State<GameplayScreen> {
                   return GestureDetector(
                     onTap: () => setState(() => _jogoSelecionado = index),
                     child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width: 200, margin: const EdgeInsets.only(right: 15), padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFF121212).withOpacity(0.9) : Colors.black87.withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(15), border: Border.all(color: isSelected ? Colors.deepOrange : Colors.white10, width: isSelected ? 2 : 1),
-                        boxShadow: isSelected ? [BoxShadow(color: Colors.deepOrange.withOpacity(0.2), blurRadius: 10)] : [],
-                      ),
+                      duration: const Duration(milliseconds: 300), width: 200, margin: const EdgeInsets.only(right: 15), padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(color: isSelected ? const Color(0xFF1E1E1E) : Colors.black87, borderRadius: BorderRadius.circular(15), border: Border.all(color: isSelected ? Colors.deepOrange : Colors.white10, width: isSelected ? 2 : 1), boxShadow: isSelected ? [BoxShadow(color: Colors.deepOrange.withOpacity(0.2), blurRadius: 10)] : []),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(child: Text(jogo['nome'], style: TextStyle(color: isSelected ? Colors.white : Colors.white70, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)),
-                              Text("${jogo['feitos']}/${jogo['total']}", style: TextStyle(color: isSelected ? Colors.deepOrange : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          ClipRRect(borderRadius: BorderRadius.circular(5), child: LinearProgressIndicator(value: jogo['progresso'], backgroundColor: Colors.white10, color: isSelected ? Colors.deepOrange : Colors.grey, minHeight: 4)),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Expanded(child: Text(jogo['nome'], style: TextStyle(color: isSelected ? Colors.white : Colors.white70, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)), Text("${jogo['feitos']}/${jogo['total']}", style: TextStyle(color: isSelected ? Colors.deepOrange : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold))]),
+                          const SizedBox(height: 10), ClipRRect(borderRadius: BorderRadius.circular(5), child: LinearProgressIndicator(value: jogo['progresso'], backgroundColor: Colors.white10, color: isSelected ? Colors.deepOrange : Colors.grey, minHeight: 4)),
                         ],
                       ),
                     ),
@@ -139,33 +152,73 @@ class _GameplayScreenState extends State<GameplayScreen> {
                 },
               ),
             ),
-          ),
+          
+          Expanded(child: _construirModuloInterface(jogoAtual)),
         ],
       ),
+      
+      floatingActionButton: !_todosAoMesmoTempo && _jogoSelecionado < _jogosAtuais.length - 1
+          ? FloatingActionButton.extended(onPressed: () => setState(() => _jogoSelecionado++), backgroundColor: Colors.deepOrange, icon: const Icon(Icons.arrow_forward, color: Colors.white), label: const Text("Próximo Jogo", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))
+          : null,
     );
   }
 
-  // Função que decide que interface carregar
+  // ==========================================
+  // O "CÉREBRO": DECIDE QUE INTERFACE CARREGAR
+  // ==========================================
   Widget _construirModuloInterface(Map<String, dynamic> jogoAtual) {
+    
+    // PACK HERITAGE HUNT
+    if (jogoAtual['nome'] == 'Radar de Curiosidade') {
+      return const RadarCuriosidades(); 
+    } else if (jogoAtual['nome'] == 'Bingo do Património') {
+      return const BingoPatrimonio(); 
+    } else if (jogoAtual['nome'] == 'Câmara de Época') {
+      return const CamaraDeEpoca(); 
+    } 
+    
+    // PACK URBAN HERO
+    else if (jogoAtual['nome'] == 'Diário do Explorador') {
+      return const DiarioExplorador(); 
+    } else if (jogoAtual['nome'] == 'Narrativa Episódica') {
+      return const NarrativaEpisodica(); 
+    } else if (jogoAtual['nome'] == 'Enigma do Mestre') {
+      return const EnigmaMestre(); 
+    }
+
+    // PACK DUO BOND
+    else if (jogoAtual['nome'] == 'Puzzle de Par') {
+      return const PuzzleDePar(); 
+    } else if (jogoAtual['nome'] == 'Quiz de Afinidade') {
+      return const QuizAfinidade(); 
+    } else if (jogoAtual['nome'] == 'Bússola Humana') {
+      return const BussolaHumana(); 
+    }
+
+    // PACK STORY & SENSES
+    else if (jogoAtual['nome'] == 'Destino Partilhado') {
+      return const DestinoPartilhado(); 
+    } else if (jogoAtual['nome'] == 'Missão Romeu e Julieta') {
+      return const MissaoRomeuJulieta(); 
+    } 
+    // ✨ LIGAÇÃO AO PRISMA DA SAUDADE ✨
+    else if (jogoAtual['nome'] == 'Prisma da Saudade') {
+      return const PrismaDaSaudade(); 
+    }
+
+    // Templates antigos (backups)
     switch (jogoAtual['tipo']) {
-      case 'mapa':
-        return _buildModuloMapa(jogoAtual);
-      case 'camara':
-        return _buildModuloCamara(jogoAtual);
-      case 'narrativa':
-        return _buildModuloNarrativa(jogoAtual);
-      case 'quiz':
-        return _buildModuloQuiz(jogoAtual);
-      default:
-        return _buildModuloMapa(jogoAtual);
+      case 'mapa': return _buildModuloMapa(jogoAtual);
+      case 'camara': return _buildModuloCamara(jogoAtual);
+      case 'narrativa': return _buildModuloNarrativa(jogoAtual);
+      case 'quiz': return _buildModuloQuiz(jogoAtual);
+      default: return _buildModuloMapa(jogoAtual);
     }
   }
 
   // ==========================================
-  // TEMPLATES DE INTERFACE (OS 4 MÓDULOS)
+  // TEMPLATES DE INTERFACE (BACKUPS INTACTOS)
   // ==========================================
-
-  // 1. MÓDULO MAPA (GPS e Navegação)
   Widget _buildModuloMapa(Map<String, dynamic> jogoAtual) {
     return Stack(
       children: [
@@ -182,8 +235,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
         Positioned(
           bottom: 20, left: 20, right: 20,
           child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(color: const Color(0xFF121212), borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white10), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 20, offset: const Offset(0, 10))]),
+            padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: const Color(0xFF121212), borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white10), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 20, offset: const Offset(0, 10))]),
             child: Column(
               mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -212,7 +264,6 @@ class _GameplayScreenState extends State<GameplayScreen> {
     );
   }
 
-  // 2. MÓDULO CÂMARA (Realidade Aumentada e Fotos)
   Widget _buildModuloCamara(Map<String, dynamic> jogoAtual) {
     return Container(
       color: Colors.black,
@@ -225,8 +276,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.center_focus_weak, color: Colors.white54, size: 60),
-                const SizedBox(height: 20),
+                const Icon(Icons.center_focus_weak, color: Colors.white54, size: 60), const SizedBox(height: 20),
                 Container(padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8), decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20)), child: const Text("Alinha a câmara...", style: TextStyle(color: Colors.white, fontSize: 12)))
               ],
             ),
@@ -235,12 +285,8 @@ class _GameplayScreenState extends State<GameplayScreen> {
             bottom: 30, left: 20, right: 20,
             child: Column(
               children: [
-                Text(jogoAtual['missao'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, shadows: [Shadow(color: Colors.black, blurRadius: 5)])),
-                const SizedBox(height: 30),
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(width: 70, height: 70, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 4), color: Colors.white24), child: Center(child: Container(width: 55, height: 55, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)))),
-                ),
+                Text(jogoAtual['missao'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, shadows: [Shadow(color: Colors.black, blurRadius: 5)])), const SizedBox(height: 30),
+                GestureDetector(onTap: () {}, child: Container(width: 70, height: 70, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 4), color: Colors.white24), child: Center(child: Container(width: 55, height: 55, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle))))),
               ],
             ),
           )
@@ -249,60 +295,35 @@ class _GameplayScreenState extends State<GameplayScreen> {
     );
   }
 
-  // 3. MÓDULO NARRATIVA (Enigmas e História)
   Widget _buildModuloNarrativa(Map<String, dynamic> jogoAtual) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(30, 120, 30, 30),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [Color(0xFF1A1A1A), Color(0xFF0A0A0A)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-      ),
+      padding: const EdgeInsets.fromLTRB(30, 120, 30, 30), decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF1A1A1A), Color(0xFF0A0A0A)], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.menu_book, color: Colors.deepOrange, size: 60),
-          const SizedBox(height: 30),
-          Text(jogoAtual['missao'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18, height: 1.5, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 40),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.white10, padding: const EdgeInsets.symmetric(vertical: 18), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))), child: const Text("Opção A: Seguir a Pista da Esquerda", style: TextStyle(color: Colors.white, fontSize: 14))),
-          ),
-          const SizedBox(height: 15),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.white10, padding: const EdgeInsets.symmetric(vertical: 18), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))), child: const Text("Opção B: Investigar o Símbolo", style: TextStyle(color: Colors.white, fontSize: 14))),
-          ),
+          const Icon(Icons.menu_book, color: Colors.deepOrange, size: 60), const SizedBox(height: 30),
+          Text(jogoAtual['missao'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18, height: 1.5, fontWeight: FontWeight.bold)), const SizedBox(height: 40),
+          SizedBox(width: double.infinity, child: ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.white10, padding: const EdgeInsets.symmetric(vertical: 18), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))), child: const Text("Opção A: Seguir a Pista da Esquerda", style: TextStyle(color: Colors.white, fontSize: 14)))), const SizedBox(height: 15),
+          SizedBox(width: double.infinity, child: ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.white10, padding: const EdgeInsets.symmetric(vertical: 18), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))), child: const Text("Opção B: Investigar o Símbolo", style: TextStyle(color: Colors.white, fontSize: 14)))),
         ],
       ),
     );
   }
 
-  // 4. MÓDULO QUIZ (Trivia e Afinidade)
   Widget _buildModuloQuiz(Map<String, dynamic> jogoAtual) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(30, 120, 30, 30),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [Color(0xFF2E1A47), Color(0xFF0A0A0A)], begin: Alignment.topCenter, end: Alignment.bottomCenter), // Fundo roxo místico
-      ),
+      padding: const EdgeInsets.fromLTRB(30, 120, 30, 30), decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF2E1A47), Color(0xFF0A0A0A)], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(30),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white24)),
-            child: Column(
-              children: [
-                const Icon(Icons.lightbulb_outline, color: Colors.amber, size: 50),
-                const SizedBox(height: 20),
-                Text(jogoAtual['missao'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, height: 1.4)),
-              ],
-            ),
+            padding: const EdgeInsets.all(30), decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white24)),
+            child: Column(children: [const Icon(Icons.lightbulb_outline, color: Colors.amber, size: 50), const SizedBox(height: 20), Text(jogoAtual['missao'], textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, height: 1.4))]),
           ),
           const SizedBox(height: 40),
           Row(
             children: [
-              Expanded(child: ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange, padding: const EdgeInsets.symmetric(vertical: 20), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))), child: const Text("Eu!", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)))),
-              const SizedBox(width: 15),
+              Expanded(child: ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange, padding: const EdgeInsets.symmetric(vertical: 20), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))), child: const Text("Eu!", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)))), const SizedBox(width: 15),
               Expanded(child: ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, padding: const EdgeInsets.symmetric(vertical: 20), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))), child: const Text("O Parceiro", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)))),
             ],
           )

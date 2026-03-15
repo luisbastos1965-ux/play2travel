@@ -1,23 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
-import 'screens/splash_screen.dart'; // Recupera o teu Splash
+import 'screens/splash_screen.dart';
+import 'app_settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const Play2TravelApp());
+
+  // 1. Inicialização Robusta do Firebase
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+  } catch (e) {
+    print("Firebase já estava inicializado.");
+  }
+
+  // 2. Configuração de Notificações
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  // 3. Obter Token e Subscrever Tópico
+  try {
+    String? token = await messaging.getToken();
+    print("-------------------------------------------------------");
+    print("ID DO DISPOSITIVO (FCM TOKEN): $token");
+    print("-------------------------------------------------------");
+
+    await messaging.subscribeToTopic('jogadores_porto');
+    print("✅ Sucesso: O telemóvel subscreveu o tópico 'jogadores_porto'!");
+
+  } catch (e) {
+    print("Erro ao obter token ou subscrever: $e");
+  }
+
+  runApp(const MyApp());
 }
 
-class Play2TravelApp extends StatelessWidget {
-  const Play2TravelApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(brightness: Brightness.dark, primaryColor: Colors.deepOrange),
-      home: const SplashScreen(), // O Splash inicia tudo
+    return AnimatedBuilder(
+      animation: AppSettings.instance,
+      builder: (context, child) {
+        return MaterialApp(
+          title: 'Play2Travel',
+          debugShowCheckedModeBanner: false,
+          themeMode: AppSettings.instance.themeMode, 
+          theme: ThemeData(
+            brightness: Brightness.light,
+            scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+            primaryColor: Colors.deepOrange,
+            colorScheme: const ColorScheme.light(
+              primary: Colors.deepOrange,
+              secondary: Colors.blueAccent,
+            ),
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: const Color(0xFF0A0A0A),
+            primaryColor: Colors.deepOrange,
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.deepOrange,
+              secondary: Colors.blueAccent,
+            ),
+            useMaterial3: true,
+          ),
+          home: const SplashScreen(), // O teu SplashScreen decide depois ir para o Login
+        );
+      },
     );
   }
 }

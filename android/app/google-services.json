@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "24579867161",
+    "project_id": "play2travel",
+    "storage_bucket": "play2travel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24579867161:android:9d5d63326956f650fee088",
+        "android_client_info": {
+          "package_name": "com.example.play2travel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtnJMTIYb-linZ4g6ZwR4KBJm2bCGD1to"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
