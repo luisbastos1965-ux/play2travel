@@ -184,7 +184,7 @@ class _NarrativaEpisodicaState extends State<NarrativaEpisodica> {
   int? _historiaSelecionadaIndex;
   int _localAtualIndex = 0;
   int _xpAcumulado = 0;
-  List<String> _caminhoEscolhido = []; 
+  final List<String> _caminhoEscolhido = []; 
   bool _mostrarNarrativa = false;
   String _textoNarrativaAtual = "";
 
@@ -260,8 +260,9 @@ class _NarrativaEpisodicaState extends State<NarrativaEpisodica> {
     int totalB = _caminhoEscolhido.where((c) => c == 'B').length;
 
     String tituloFinal = "";
-    if (totalA > totalB + 2) tituloFinal = "O EXPLORADOR MÍSTICO";
-    else if (totalB > totalA + 2) tituloFinal = "O OBSERVADOR URBANO";
+    if (totalA > totalB + 2) {
+      tituloFinal = "O EXPLORADOR MÍSTICO";
+    } else if (totalB > totalA + 2) tituloFinal = "O OBSERVADOR URBANO";
     else tituloFinal = "O VIAJANTE EQUILIBRADO";
 
     int bonusFinal = 300;

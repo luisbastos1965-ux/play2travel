@@ -204,7 +204,7 @@ class _QuizAfinidadeState extends State<QuizAfinidade> {
   
   int _acertos = 0;
   int _totalJogadas = 0;
-  List<Map<String, dynamic>> _perguntasJaJogadas = [];
+  final List<Map<String, dynamic>> _perguntasJaJogadas = [];
 
   final List<Map<String, dynamic>> _todasAsPerguntas = [
     // --- CARTAS QUEM DE NÓS (8) ---
@@ -437,7 +437,7 @@ class _QuizAfinidadeState extends State<QuizAfinidade> {
                         ),
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -495,8 +495,9 @@ class _QuizAfinidadeState extends State<QuizAfinidade> {
     int percentagemSintonia = _totalJogadas == 0 ? 0 : ((_acertos / _totalJogadas) * 100).round();
     String diagnostico = "";
 
-    if (_totalJogadas == 0) diagnostico = "Não jogaram nenhuma carta... Voltem quando estiverem prontos!";
-    else if (percentagemSintonia == 100) diagnostico = "ALMAS GÉMEAS EXPLORADORAS! Lêm os pensamentos um do outro perfeitamente.";
+    if (_totalJogadas == 0) {
+      diagnostico = "Não jogaram nenhuma carta... Voltem quando estiverem prontos!";
+    } else if (percentagemSintonia == 100) diagnostico = "ALMAS GÉMEAS EXPLORADORAS! Lêm os pensamentos um do outro perfeitamente.";
     else if (percentagemSintonia >= 60) diagnostico = "UMA DUPLA SÓLIDA! Estão no mesmo comprimento de onda a maior parte do tempo.";
     else if (percentagemSintonia >= 40) diagnostico = "OS OPOSTOS ATRAEM-SE! Têm perspetivas diferentes que se complementam.";
     else diagnostico = "DUPLA CAÓTICA E DIVERTIDA! O Porto testou as vossas diferenças hoje!";

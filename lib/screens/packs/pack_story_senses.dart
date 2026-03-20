@@ -240,7 +240,7 @@ class _MissaoRomeuJulietaState extends State<MissaoRomeuJulieta> {
     'Forma Redonda', 'Forma Quadrada', 'Moderno', 'Antigo', 'Amarelo', 'Branco'
   ];
 
-  List<String> _pistasSelecionadas = [];
+  final List<String> _pistasSelecionadas = [];
   bool _pistasEnviadas = false;
 
   void _enviarPistas() {
@@ -406,8 +406,11 @@ class _MissaoRomeuJulietaState extends State<MissaoRomeuJulieta> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: isSelected ? Colors.cyanAccent : Colors.transparent)),
                         onSelected: (bool selected) {
                           setState(() {
-                            if (selected) _pistasSelecionadas.add(pista);
-                            else _pistasSelecionadas.remove(pista);
+                            if (selected) {
+                              _pistasSelecionadas.add(pista);
+                            } else {
+                              _pistasSelecionadas.remove(pista);
+                            }
                           });
                         },
                       );
@@ -489,8 +492,8 @@ class _MissaoRomeuJulietaState extends State<MissaoRomeuJulieta> {
             padding: const EdgeInsets.all(25), decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.pinkAccent)),
             child: const Column(
               children: [
-                Text("PONTO DE ENCONTRO:", style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold, letterSpacing: 1)), const SizedBox(height: 10),
-                Text("Ponte Luiz I", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)), const SizedBox(height: 5),
+                Text("PONTO DE ENCONTRO:", style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold, letterSpacing: 1)), SizedBox(height: 10),
+                Text("Ponte Luiz I", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)), SizedBox(height: 5),
                 Text("(A meio do Tabuleiro Inferior)", style: TextStyle(color: Colors.pinkAccent, fontSize: 14)),
               ],
             ),
@@ -608,7 +611,7 @@ class _PrismaDaSaudadeState extends State<PrismaDaSaudade> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: const [Icon(Icons.lens, color: Colors.redAccent, size: 50), SizedBox(width: 10), Icon(Icons.lens, color: Colors.blueAccent, size: 50)]), const SizedBox(height: 20),
+          const Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.lens, color: Colors.redAccent, size: 50), SizedBox(width: 10), Icon(Icons.lens, color: Colors.blueAccent, size: 50)]), const SizedBox(height: 20),
           const Text("PRISMA DA SAUDADE", style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold, letterSpacing: 2)), const SizedBox(height: 20),
           const Text("A cidade tem múltiplas caras. Peguem nos vossos filtros físicos coloridos.", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)), const SizedBox(height: 20),
           const Text("Olhem para os monumentos do Porto através do FILTRO VERMELHO (que traz o calor, a paixão e a energia) e depois através do FILTRO AZUL (que traz a melancolia, o frio e a calma).\n\nO ecrã da aplicação vai adaptar-se à vossa lente. Registem as duas perspetivas em cada local!", textAlign: TextAlign.center, style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.5)), const SizedBox(height: 40),
